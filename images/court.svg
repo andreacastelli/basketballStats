@@ -1,0 +1,131 @@
+<svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 500 600"
+        width="500"
+        height="600"
+        style="background-color: #D2B48C;"
+        >
+        <!-- Campo da Basket -->
+        <!-- Area del campo -->
+<rect x="0" y="0" width="500" height="600" fill="#D2B48C" />
+
+        <!-- Area del tiro libero -->
+<rect
+x="150"
+y="0"
+width="200"
+height="150"
+fill="none"
+stroke="white"
+stroke-width="4"
+/>
+<circle cx="250" cy="150" r="50" fill="none" stroke="white" stroke-width="4" />
+
+        <!-- Riga del tiro da tre punti -->
+<path
+d="M 0,600 A 250,250 0 0,1 500,150"
+fill="none"
+stroke="white"
+stroke-width="4"
+/>
+
+        <!-- Riga del tiro da due punti -->
+<path
+d="M 50,600 A 200,200 0 0,1 450,150"
+fill="none"
+stroke="yellow"
+stroke-width="4"
+/>
+
+        <!-- Canestro -->
+<circle
+cx="250"
+cy="20"
+r="20"
+fill="none"
+stroke="red"></circle>
+        <!--**
+Ecco il codice completato per rappresentare metà campo da basket con il canestro e la separazione tra le righe del tiro da tre e da due:
+
+### Codice SVG Completo
+```html
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 500 600"
+    width="500"
+    height="600"
+    style="background-color: #D2B48C;"
+        >
+
+<rect x="0" y="0" width="500" height="600" fill="#D2B48C" />
+
+        <- Area del tiro libero -->
+<rect
+x="150"
+y="0"
+width="200"
+height="150"
+fill="none"
+stroke="white"
+stroke-width="4"
+/>
+<circle cx="250" cy="150" r="50" fill="none" stroke="white" stroke-width="4" />
+
+        <!-- Riga del tiro da tre punti -->
+<path
+d="M 0,600 A 250,250 0 0,1 500,150"
+fill="none"
+stroke="white"
+stroke-width="4"
+/>
+
+        <!-- Riga del tiro da due punti -->
+<path
+d="M 50,600 A 200,200 0 0,1 450,150"
+fill="none"
+stroke="yellow"
+stroke-width="4"
+/>
+
+        <!-- Tabellone -->
+<rect
+x="200"
+y="10"
+width="100"
+height="10"
+fill="black"
+/>
+
+        <!-- Canestro -->
+<circle
+cx="250"
+cy="30"
+r="20"
+fill="none"
+stroke="red"
+stroke-width="4"
+/>
+        <!-- Supporto tabellone -->
+<line x1="250" y1="0" x2="250" y2="10" stroke="black" stroke-width="4" />
+
+        </svg>
+       <!--
+
+        ### Modifiche Chiave:
+        1. **Distinzione tra tiro da tre e da due**:
+        - La **linea da tre punti** è disegnata con un arco bianco usando `<path>`.
+- La **linea da due punti** è un arco interno, disegnato con un colore **giallo**.
+
+2. **Tabellone e supporto del canestro**:
+- Il tabellone è rappresentato con un rettangolo nero sopra il canestro.
+- Il supporto collega il tabellone al bordo superiore del campo.
+
+3. **Canestro**:
+- Un cerchio rosso rappresenta il ferro del canestro.
+- Il supporto tra il tabellone e il ferro è aggiunto per maggiore realismo.
+
+4. **Metà campo**:
+- La metà campo è delimitata dalla vista (`viewBox`) che mostra solo una metà (500x600).
+
+
+       -->

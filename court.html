@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campo da Basket</title>
+    <p>Doppio click per canestro fatto e poi scelta giocatore</p>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button {
+            padding: 8px 12px;
+            margin-top: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            margin-top: 20px;
+            gap: 20px;
+        }
+
+        .campo {
+            display: grid;
+            grid-template-columns: repeat(25, 20px);
+            grid-template-rows: repeat(23, 20px);
+            gap: 1px;
+            width: 502px;
+            height: 462px;
+            background-color: black;
+            position: relative;
+        }
+
+        .quadrato {
+            width: 20px;
+            height: 20px;
+            background-color: #8B4513; /* Marrone scuro */
+        }
+
+        .tre-punti {
+            background-color: #D2B48C; /* Marrone chiaro */
+        }
+
+        .riga-tre-punti {
+            background-color: white;
+        }
+
+        .team {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Due colonne */
+            gap: 10px;
+        }
+
+        .player {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .player input {
+            width: 80%;
+            text-align: center;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .storico {
+            margin-left: 20px;
+            width: 300px;
+            text-align: left;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            background: #f9f9f9;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .storico ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .storico li {
+            margin: 5px 0;
+        }
+
+        .storico li span {
+            font-weight: bold;
+        }
+
+        .tiro-libero {
+            width: 200px;
+            height: 50px;
+            background-color: #FFD700;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            color: black;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .tiro-libero:hover {
+            background-color: #FFC107;
+        }
+
+        .statistiche {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .statistiche p {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+
+        select {
+            margin-top: 10px;
+            padding: 5px;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+<h1>
+    Campo da Basket
+    <button id="btnEsportaCSV">Esporta CSV</button>
+</h1>
+<div class="container">
+    <!-- Campo da basket -->
+    <div class="campo" id="campo"></div>
+
+    <!-- Griglia giocatori e periodo -->
+    <div>
+        <div class="team" id="team">
+            <!-- Giocatori -->
+            <div class="player" data-giocatore="Giocatore 1">
+                <input type="text" placeholder="Nome" maxlength="20">
+                <input type="number" placeholder="N°" min="0" max="99">
+            </div>
+            <div class="player" data-giocatore="Giocatore 2">
+                <input type="text" placeholder="Nome" maxlength="20">
+                <input type="number" placeholder="N°" min="0" max="99">
+            </div>
+            <!-- Aggiungi giocatori -->
+        </div>
+        <select id="periodo">
+            <option value="1">Periodo 1</option>
+            <option value="2">Periodo 2</option>
+            <option value="3">Periodo 3</option>
+            <option value="4">Periodo 4</option>
+        </select>
+    </div>
+
+    <!-- Storico -->
+    <div class="storico">
+        <h3>Storico Tiri</h3>
+        <ul id="storico"></ul>
+    </div>
+</div>
+
+<!-- Area tiro libero -->
+<div class="tiro-libero" id="tiroLibero">Tiro Libero</div>
+
+<!-- Statistiche -->
+<div class="statistiche" id="statistiche">
+    <p id="percentuale-tiri-liberi">Percentuale tiri liberi: 0%</p>
+    <p id="percentuale-tiri-due">Percentuale tiri da due punti: 0%</p>
+    <p id="percentuale-tiri-tre">Percentuale tiri da tre punti: 0%</p>
+</div>
+
+<script>
+    let storico = [];
+    let lastShotIndex = null;
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const campo = document.getElementById("campo");
+        const storicoUl = document.getElementById("storico");
+        const tiroLibero = document.getElementById("tiroLibero");
+        const btnEsportaCSV = document.getElementById("btnEsportaCSV");
+        const giocatori = document.querySelectorAll(".player");
+        const statisticaLiberi = document.getElementById("percentuale-tiri-liberi");
+        const statisticaDue = document.getElementById("percentuale-tiri-due");
+        const statisticaTre = document.getElementById("percentuale-tiri-tre");
+        const periodoSelect = document.getElementById("periodo");
+
+        let clickTimer = null;
+
+        // Creazione del campo e gestione tiri
+        for (let r = 0; r < 23; r++) {
+            for (let c = 0; c < 25; c++) {
+                const quadrato = document.createElement("div");
+                quadrato.classList.add("quadrato");
+
+                const distanzaDalCentro = Math.sqrt((c - 12) ** 2 + (r - 18) ** 2);
+
+                if (distanzaDalCentro > 10) quadrato.classList.add("tre-punti");
+                if (Math.abs(distanzaDalCentro - 10) < 1) quadrato.classList.add("riga-tre-punti");
+
+                quadrato.addEventListener("click", function () {
+                    if (clickTimer) {
+                        clearTimeout(clickTimer);
+                        clickTimer = null;
+                        aggiungiStorico("Canestro fatto", r, c, distanzaDalCentro > 10 ? 3 : 2);
+                    } else {
+                        clickTimer = setTimeout(() => {
+                            aggiungiStorico("Canestro sbagliato", r, c, distanzaDalCentro > 10 ? 3 : 2);
+                            clickTimer = null;
+                        }, 250);
+                    }
+                });
+
+                campo.appendChild(quadrato);
+            }
+        }
+
+        // Tiro libero click/doppio-click
+        tiroLibero.addEventListener("click", function () {
+            if (clickTimer) {
+                clearTimeout(clickTimer);
+                clickTimer = null;
+                aggiungiStorico("Canestro fatto", null, null, 1);
+            } else {
+                clickTimer = setTimeout(() => {
+                    aggiungiStorico("Canestro sbagliato", null, null, 1);
+                    clickTimer = null;
+                }, 250);
+            }
+        });
+
+        // Funzione per aggiungere un tiro allo storico
+        function aggiungiStorico(risultato, r, c, punti) {
+            const periodo = periodoSelect.value;
+            const tiro = {
+                giocatore: "Non assegnato",
+                risultato: risultato,
+                periodo: periodo,
+                posizione: punti === 1 ? "Tiro libero" : `(${c}, ${r})`,
+                punti: punti,
+            };
+            storico.push(tiro);
+            lastShotIndex = storico.length - 1;
+            aggiornaStorico();
+            aggiornaStatistiche();
+        }
+
+        // Funzione per aggiornare lo storico
+        function aggiornaStorico() {
+            storicoUl.innerHTML = "";
+            storico.forEach(tiro => {
+                const li = document.createElement("li");
+                li.innerHTML = `Periodo ${tiro.periodo} - ${tiro.risultato}: <strong>${tiro.punti} punti</strong> - ${tiro.posizione} <span>(Giocatore: ${tiro.giocatore})</span>`;
+                storicoUl.appendChild(li);
+            });
+        }
+
+        // Funzione per aggiornare le statistiche
+        function aggiornaStatistiche() {
+            const tiriLiberi = storico.filter(tiro => tiro.punti === 1);
+            const tiriDue = storico.filter(tiro => tiro.punti === 2);
+            const tiriTre = storico.filter(tiro => tiro.punti === 3);
+
+            const percentuale = (tiri, tipo) =>
+                tiri.length > 0
+                    ? `${Math.round((tiri.filter(tiro => tiro.risultato === "Canestro fatto").length / tiri.length) * 100)}%`
+                    : "0%";
+
+            statisticaLiberi.textContent = `Percentuale tiri liberi: ${percentuale(tiriLiberi)}`;
+            statisticaDue.textContent = `Percentuale tiri da due punti: ${percentuale(tiriDue)}`;
+            statisticaTre.textContent = `Percentuale tiri da tre punti: ${percentuale(tiriTre)}`;
+        }
+
+        // Assegna giocatore
+        giocatori.forEach(player => {
+            player.addEventListener("click", function () {
+                const nome = this.querySelector('input[type="text"]').value || "Sconosciuto";
+                if (lastShotIndex !== null) {
+                    storico[lastShotIndex].giocatore = nome;
+                    aggiornaStorico();
+                }
+            });
+        });
+
+        // Esporta CSV
+        btnEsportaCSV.addEventListener("click", function () {
+            const csvContent = "data:text/csv;charset=utf-8," +
+                ["Periodo,Risultato,Punti,Posizione,Giocatore"].concat(
+                    storico.map(({ periodo, risultato, punti, posizione, giocatore }) =>
+                        `${periodo},${risultato},${punti},${posizione},${giocatore}`
+                    )
+                ).join("\n");
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "storico_tiri.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    });
+</script>
+</body>
+</html>
