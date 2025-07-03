@@ -85,7 +85,7 @@
         }
 
         .player input {
-            width: 80%;
+            width: 50px; /* Ridotto per un massimo di 3 cifre */
             text-align: center;
             font-size: 14px;
             margin-top: 5px;
@@ -149,6 +149,36 @@
             padding: 5px;
             font-size: 15px;
         }
+        @media only screen and (orientation: landscape) {
+            body {
+                font-size: 14px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .container {
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: space-around;
+                gap: 15px;
+                margin-top: 10px;
+            }
+
+            .campo {
+                transform: scale(0.9); /* Riduce leggermente il campo per adattarlo alla larghezza */
+            }
+
+            .storico {
+                font-size: 12px;
+                width: auto; /* Adattabile */
+            }
+            h1 {
+                display: none;
+            }
+
+        }
+
     </style>
 </head>
 <body>
@@ -279,7 +309,7 @@
             storicoUl.innerHTML = "";
             storico.forEach(tiro => {
                 const li = document.createElement("li");
-                li.innerHTML = `Periodo ${tiro.periodo} - ${tiro.risultato}: <strong>${tiro.punti} punti</strong> - ${tiro.posizione} <span>(Giocatore: ${tiro.giocatore})</span>`;
+                li.innerHTML = `Per. ${tiro.periodo} - ${tiro.risultato}: <strong>${tiro.punti} punti</strong> - ${tiro.posizione} <span>${tiro.giocatore}</span>`;
                 storicoUl.appendChild(li);
             });
         }
